@@ -87,6 +87,24 @@ public class WebRequestTests
                 200,
                 "application/json",
             },
+            new object[]
+            {
+                WebRequest
+                    .Put(PUT_URL)
+                    .AttachFormPayload(
+                        new WebRequestForm()
+                            .Set(
+                                "file",
+                                new WebFile(
+                                    Convert.FromBase64String(TEST_IMAGE_FILE),
+                                    "test-file.png",
+                                    "image/png"
+                                )
+                            )
+                    ),
+                200,
+                "multipart/form-data",
+            },
         };
     public static IEnumerable<object[]> PatchTestRequests =>
         new[]
@@ -96,6 +114,24 @@ public class WebRequestTests
                 WebRequest.Patch(PATCH_URL).AttachJsonPayload(new { title = "test-title" }),
                 200,
                 "application/json",
+            },
+            new object[]
+            {
+                WebRequest
+                    .Patch(PATCH_URL)
+                    .AttachFormPayload(
+                        new WebRequestForm()
+                            .Set(
+                                "file",
+                                new WebFile(
+                                    Convert.FromBase64String(TEST_IMAGE_FILE),
+                                    "test-file.png",
+                                    "image/png"
+                                )
+                            )
+                    ),
+                200,
+                "multipart/form-data",
             },
         };
 

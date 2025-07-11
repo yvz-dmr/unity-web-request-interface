@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Vuzmir.UnityWebRequestInterface
         public static Encoding Encoding = Encoding.UTF8;
 
         public string Scheme { get; private set; }
-        public string Host { get; private set; }
+        public string Authority { get; private set; }
         public string Path { get; private set; }
         public string Url
         {
@@ -40,7 +41,7 @@ namespace Vuzmir.UnityWebRequestInterface
                 var sb = new StringBuilder();
                 sb.Append(Scheme);
                 sb.Append("://");
-                sb.Append(Host);
+                sb.Append(Authority);
                 sb.Append(Path);
                 if (Queries.Count() > 0)
                 {
@@ -122,7 +123,7 @@ namespace Vuzmir.UnityWebRequestInterface
             }
 
             Scheme = uri.Scheme;
-            Host = uri.Host;
+            Authority = uri.Authority;
             Path = uri.AbsolutePath;
 
             Method = method;
