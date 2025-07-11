@@ -1,0 +1,14 @@
+{
+    "name": "com.vuzmir.unity-web-request-interface",
+    "author": {
+        "name": "Yavuz Demir",
+        "email": "yavuz.dmr.scl@gmail.com",
+        "url": "https://github.com/yvz-dmr"
+    },
+    "displayName": "Web Request Interface",
+    "version": "1.0.0",
+    "unity": "2022.1",
+    "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+    }
+}
