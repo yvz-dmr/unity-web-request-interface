@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,7 +104,7 @@ namespace Vuzmir.UnityWebRequestInterface
         public WebRequest(string endpoint, WebRequestMethod method)
         {
             if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri))
-                throw new InvalidUrlException(endpoint);
+                throw new InvalidDataException($"The value '{endpoint}' is not a valid URI.");
 
             var query = uri.Query;
             if (!string.IsNullOrEmpty(query))
@@ -224,10 +225,16 @@ namespace Vuzmir.UnityWebRequestInterface
         }
 
         /// <summary>
-        /// Sends the request and returns a <see cref="WebResponse"/> containing the JSON response.
+        /// Sends the request and returns a <see cref="WebResponse"/>.
         /// </summary>
         /// <returns>A task that resolves to a <see cref="WebResponse"/>.</returns>
         public Task<WebResponse> GetResponse() => Provider.GetResponse(this);
+
+        /// <summary>
+        /// Sends the request and returns a <see cref="WebResponse<T>"/> containing the JSON response.
+        /// </summary>
+        /// <returns>A task that resolves to a <see cref="WebResponse<T>"/>.</returns>
+        public Task<WebResponse<T>> GetResponse<T>() => Provider.GetResponse<T>(this);
 
         /// <summary>
         /// Sends the web request.
@@ -239,19 +246,19 @@ namespace Vuzmir.UnityWebRequestInterface
         /// Sends the request and gets raw bytes.
         /// </summary>
         /// <exception cref="WebRequestException">Thrown when the request fails or the network is unavailable.</exception>
-        public Task<byte[]> GetBytes() => Provider.GetBytes(this);
+        public Task<byte[]> GetBytesOrThrow() => Provider.GetBytesOrThrow(this);
 
         /// <summary>
         /// Sends the request and gets the response as a string.
         /// </summary>
         /// <exception cref="WebRequestException">Thrown when the request fails or the network is unavailable.</exception>
-        public Task<string> GetString() => Provider.GetString(this);
+        public Task<string> GetStringOrThrow() => Provider.GetStringOrThrow(this);
 
         /// <summary>
         /// Sends the request and deserializes the response to JSON object.
         /// </summary>
         /// <exception cref="WebRequestException">Thrown when the request fails or the network is unavailable.</exception>
-        public Task<T> GetJsonResponse<T>() => Provider.GetJsonResponse<T>(this);
+        public Task<T> GetJsonOrThrow<T>() => Provider.GetJsonOrThrow<T>(this);
 
         /// <summary>
         /// Checks if there is an active internet connection by performing a lightweight request.
@@ -266,11 +273,6 @@ namespace Vuzmir.UnityWebRequestInterface
                 return true;
             }
             catch (WebRequestException)
-            {
-                // Optionally log or handle specific error scenarios here
-                return false;
-            }
-            catch
             {
                 return false;
             }

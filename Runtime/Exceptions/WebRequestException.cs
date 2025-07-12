@@ -8,14 +8,17 @@ namespace Vuzmir.UnityWebRequestInterface
         public string Url { get; private set; }
         public string Error { get; private set; }
         public string Body { get; private set; }
+        public bool IsNetworkAvailable { get; private set; }
 
-        public WebRequestException(long statusCode, string url, string error, string body = null)
+
+        public WebRequestException(long statusCode, string url, string error, string body, bool isNetworkAvailable)
             : base(FormatMessage(statusCode, url, error, body))
         {
             StatusCode = statusCode;
             Url = url;
             Error = error;
             Body = body;
+            IsNetworkAvailable = isNetworkAvailable;
         }
 
         private static string FormatMessage(long statusCode, string url, string error, string body)

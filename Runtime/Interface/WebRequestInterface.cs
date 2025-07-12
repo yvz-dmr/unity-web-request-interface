@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,25 +15,56 @@ namespace Vuzmir.UnityWebRequestInterface
                 throw GetException(request.Url, response);
         }
 
-        public async Task<T> GetJsonResponse<T>(WebRequest request)
+        public async Task<WebResponse<T>> GetResponse<T>(WebRequest request)
         {
             var response = await GetResponse(request);
             if (response.IsSuccess)
-                return response.ToJson<T>();
+            {
+                try
+                {
+                    var data = await response.ToJsonAsync<T>();
+                    return new WebResponse<T>(response.StatusCode,
+                                                  response.Payload,
+                                                  null,
+                                                  response.IsNetworkAvailable,
+                                                  data);
+                }
+                catch (Exception e)
+                {
+                    return new WebResponse<T>(0,
+                                                  response.Payload,
+                                                  e.Message,
+                                                  response.IsNetworkAvailable,
+                                                  default);
+                }
+            }
+
+            return new WebResponse<T>(0,
+                                      response.Payload,
+                                      response.Error,
+                                      response.IsNetworkAvailable,
+                                      default);
+        }
+
+
+        public async Task<T> GetJsonOrThrow<T>(WebRequest request)
+        {
+            var response = await GetResponse<T>(request);
+            if (response.IsSuccess)
+                return response.Data;
 
             throw GetException(request.Url, response);
         }
-
-        public async Task<string> GetString(WebRequest request)
+        public async Task<string> GetStringOrThrow(WebRequest request)
         {
-            var bytes = await GetBytes(request);
+            var bytes = await GetBytesOrThrow(request);
             if (bytes == null || bytes.Length == 0)
                 return null;
 
             return WebRequest.Encoding.GetString(bytes);
         }
 
-        public async Task<byte[]> GetBytes(WebRequest request)
+        public async Task<byte[]> GetBytesOrThrow(WebRequest request)
         {
             var response = await GetResponse(request);
             if (response.IsSuccess)
@@ -42,13 +74,12 @@ namespace Vuzmir.UnityWebRequestInterface
 
         private WebRequestException GetException(string url, WebResponse response)
         {
-            return response is NetworkUnavailableResponse
-                ? new NetworkUnavailableException(url)
-                : new WebRequestException(
+            return new WebRequestException(
                     response.StatusCode,
                     url,
                     response.Error,
-                    response.StringPayload
+                    response.StringPayload,
+                    response.IsNetworkAvailable
                 );
         }
     }

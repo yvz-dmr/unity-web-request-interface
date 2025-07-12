@@ -23,13 +23,21 @@ namespace Vuzmir.UnityWebRequestInterface
                         new WebResponse(
                             unityWebRequest.responseCode,
                             unityWebRequest.downloadHandler.data,
-                            null
+                            null,
+                            true
                         )
                     );
                 }
                 else if (unityWebRequest.result == UnityWebRequest.Result.ConnectionError)
                 {
-                    completion.SetResult(new NetworkUnavailableResponse());
+                    completion.SetResult(
+                        new WebResponse(
+                            0,
+                            null,
+                            "Network unavailable, please check your internet connection",
+                            false
+                        )
+                    );
                 }
                 else
                 {
@@ -37,7 +45,8 @@ namespace Vuzmir.UnityWebRequestInterface
                         new WebResponse(
                             unityWebRequest.responseCode,
                             unityWebRequest.downloadHandler.data,
-                            unityWebRequest.error
+                            unityWebRequest.error,
+                            true
                         )
                     );
                 }

@@ -41,43 +41,80 @@ https://github.com/yvz-dmr/unity-web-request-interface.git
 
 ## Usage
 
-### Simple Get Request
+### Create Request
+
+#### Simple Get
 ```csharp
-var getRequest = await WebRequest.Get("https://postman-echo.com/get").GetResponse();
+var request = await WebRequest.Get("https://postman-echo.com/get");
 ```
 
-### Post File Inside Form
+#### Post File Inside Form
 ```csharp
-var postFile = await WebRequest
+var request = await WebRequest
   .Post("https://postman-echo.com/post")
   .AttachFormPayload(
     new WebRequestForm()
     .Set("field1", "foo")
     .Set("field2", "bar")
     .Set("file", new WebFile(new byte[1024], "fileName", "mimeType"))
-).GetResponse();
+);
 ```
-### Post Json Object As Body
+#### Post Json Object As Body
 ```csharp
-var postBodyAsJson = await WebRequest
+var request = await WebRequest
   .Post("https://postman-echo.com/post")
-  .AttachJsonPayload(new { id = Guid.NewGuid().ToString(), title = "title" })
-  .GetResponse();
+  .AttachJsonPayload(new { id = Guid.NewGuid().ToString(), title = "title" });
 ```
 
-### Post File As Body
+#### Post File As Body
 ```csharp
-var postFileAsBody = await WebRequest
+var request = await WebRequest
   .Post("https://postman-echo.com/post")
   .AttachRawPayload(new byte[2048])
-  .SetHeader("content-type", "image/png")
-  .GetResponse();
+  .SetHeader("content-type", "image/png");
 ```
 
-### Handle Web Response
+### Get Response
+
+#### Get Web Response
 
 ```csharp
-var response = await WebRequest.Get("https://postman-echo.com/get").GetResponse();
+WebRequest request; // Any web request object
+var response = await request.GetResponse();
+```
+
+#### Get Web Response with Json Payload
+
+```csharp
+WebRequest request; // Any web request object
+WebResponse<MyDataObject> response = await request.GetResponse<MyDataObject>();
+```
+
+#### Get Server Response as Json Payload
+
+```csharp
+WebRequest request; // Any web request object
+MyDataObject response = await request.GetJsonOrThrow<MyDataObject>();
+```
+
+#### Get Response as byte[]
+
+```csharp
+WebRequest request; // Any web request object
+var bytes = await request.GetBytesOrThrow();
+```
+
+#### Get Response as string
+
+```csharp
+WebRequest request; // Any web request object
+var str = await request.GetStringOrThrow();
+```
+
+### Handle Response
+
+```csharp
+WebResponse response; // Any web response object
 if (response.IsSuccess)
 {
   //Handle Response
@@ -89,11 +126,11 @@ if (response.IsSuccess)
   var str = response.StringPayload;
 
   //Response as parsed json object
-  var jsonObj = response.ToJson<MyDataType>();
+  var jsonObj = response.ToJson<MyDataObject>();
 }
 else
 {
-  if (response is NetworkUnavailableResponse)
+  if (response.IsNetworkAvailable)
   {
     //No internet connection
   }
@@ -105,33 +142,40 @@ else
 }
 ```
 
-### Get Json Object As Response
-```csharp
-var jsonObject = await WebRequest.Get("https://postman-echo.com/post").GetJsonResponse<MyDataType>();
-```
-
-This method throws WebRequestException if request fails.
+### Handle Exception
 
 ```csharp
-
-try
-{
-  var jsonObject = await WebRequest.Get("https://postman-echo.com/post").GetJsonResponse<MyDataType>();
+WebRequest request; // Any web request object
+try{
+  await request.Send();
+  //or
+  var bytes = await request.GetBytesOrThrow();
+  //or
+  var str = await request.GetStringOrThrow();
+  //or
+  var obj = await request.GetJsonOrThrow<MyDataObject>();
 }
-catch (NetworkUnavailableException)
-{
-  //No internet connection
-}
-catch (WebRequestException e)
-{
+catch(WebRequestException e){
+  // HTTP status code of the response (e.g., 200, 404). If the response couldn't be parsed (e.g., invalid JSON), this will be 0.
   Debug.Log(e.StatusCode);
+
+  // The URL that was requested
   Debug.Log(e.Url);
-  Debug.Log(e.Body);
+
+  // Error message
   Debug.Log(e.Error);
+
+  // Body content as string returned by the server, if any (e.g., JSON string, HTML, plain text)
+  Debug.Log(e.Body);
+
+  // Indicates whether the device had an active internet connection during the request
+  Debug.Log(e.IsNetworkAvailable);
 }
 ```
 
-### Set Json Serializer Settings
+### Configure
+
+#### Set Json Serializer Settings
 
 You can set JsonSerializerSettings for Json Deserialization.
 

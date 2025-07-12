@@ -92,15 +92,14 @@ public class WebRequestTests
                 WebRequest
                     .Put(PUT_URL)
                     .AttachFormPayload(
-                        new WebRequestForm()
-                            .Set(
-                                "file",
-                                new WebFile(
-                                    Convert.FromBase64String(TEST_IMAGE_FILE),
-                                    "test-file.png",
-                                    "image/png"
-                                )
+                        new WebRequestForm().Set(
+                            "file",
+                            new WebFile(
+                                Convert.FromBase64String(TEST_IMAGE_FILE),
+                                "test-file.png",
+                                "image/png"
                             )
+                        )
                     ),
                 200,
                 "multipart/form-data",
@@ -120,15 +119,14 @@ public class WebRequestTests
                 WebRequest
                     .Patch(PATCH_URL)
                     .AttachFormPayload(
-                        new WebRequestForm()
-                            .Set(
-                                "file",
-                                new WebFile(
-                                    Convert.FromBase64String(TEST_IMAGE_FILE),
-                                    "test-file.png",
-                                    "image/png"
-                                )
+                        new WebRequestForm().Set(
+                            "file",
+                            new WebFile(
+                                Convert.FromBase64String(TEST_IMAGE_FILE),
+                                "test-file.png",
+                                "image/png"
                             )
+                        )
                     ),
                 200,
                 "multipart/form-data",
@@ -174,7 +172,7 @@ public class WebRequestTests
     )
     {
         // Act
-        var response = await request.GetJsonResponse<Dictionary<string, object>>();
+        var response = await request.GetResponse<Dictionary<string, object>>();
 
         // Assert
         Assert.AreEqual(contentType, request.ContentType);
@@ -189,7 +187,7 @@ public class WebRequestTests
     )
     {
         // Act
-        var response = await request.GetBytes();
+        var response = await request.GetBytesOrThrow();
 
         // Assert
         Assert.AreEqual(contentType, request.ContentType);
@@ -205,7 +203,7 @@ public class WebRequestTests
     )
     {
         // Act
-        var response = await request.GetString();
+        var response = await request.GetStringOrThrow();
 
         // Assert
         Assert.AreEqual(contentType, request.ContentType);
