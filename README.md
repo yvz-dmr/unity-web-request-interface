@@ -15,9 +15,9 @@ Add the following **scoped registry** to your project's `Packages/manifest.json`
 "scopedRegistries" : [
   {
     "name": "pckgs.io",
-    "url": "https://registry.pckgs.io/upm",
+    "url": "https://upm.pckgs.io",
     "scopes": [
-      "pckgs.io"
+      "com.vuzmir"
     ]
   }
 ],
@@ -27,9 +27,8 @@ Then add the package dependency under the "dependencies" section:
 
 ```json
 "dependencies" : {
-  "pckgs.io.com.vuzmir.unity-web-request-interface": "1.0.0"
+  "com.vuzmir.unity-web-request-interface": "1.0.0"
 }
-
 ```
 
 ### By Git Url
